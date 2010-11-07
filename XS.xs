@@ -1,4 +1,5 @@
 /* --------------------- C CODE ---------------------- */
+#define PERL_NO_GET_CONTEXT
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,7 +30,7 @@ extern "C" {
 
 
 /* --------------------- XS CODE ---------------------- */
-MODULE = Linux::Prctl::XS  PACKAGE = Linux::Prctl::XS
+MODULE = Linux::Prctl::XS  PACKAGE = Linux::Prctl::XS  PREFIX = pr_
 PROTOTYPES: ENABLE
 
 SV*
@@ -45,12 +46,28 @@ OUTPUT:
 SV*
 pr_set_name(SV* buf)
 PREINIT:
-    int ret;
 CODE:
 	if (SvCUR(buf) >= PROG_NAME_LEN) {
 		PerlIO_printf(PerlIO_stderr(), "pr_set_name: name buffer is %i bytes over\n", PROG_NAME_LEN);
 	}
-	ret = prctl(PR_SET_NAME, SvPVX(buf));
-    RETVAL = newSViv(ret == 0 ? 1 : 0);
+    RETVAL = newSViv((prctl(PR_SET_NAME, SvPVX(buf)) != -1) ? 1 : 0);
 OUTPUT:
     RETVAL
+
+SV*
+pr_get_pdeathsig()
+PREINIT:
+	int sig;
+CODE:
+	prctl(PR_GET_PDEATHSIG, &sig);
+	RETVAL = newSViv(sig);
+OUTPUT:
+	RETVAL
+
+SV*
+pr_set_pdeathsig(SV* sig)
+PREINIT:
+CODE:
+    RETVAL = newSViv((prctl(PR_SET_PDEATHSIG, SvIV(sig)) != -1) ? 1 : 0);
+OUTPUT:
+	RETVAL

@@ -3,7 +3,7 @@ package Linux::Prctl::XS;
 use strict;
 use warnings;
 use base qw(Exporter);
-our $VERSION = '0.01';
+our $VERSION = '0.1';
 our(@ISA, @EXPORT_OK, %EXPORT_TAGS);
 
 eval {
@@ -16,7 +16,12 @@ eval {
     __PACKAGE__->bootstrap($VERSION);
 };
 
-@EXPORT_OK = qw(pr_get_name pr_set_name);
+@EXPORT_OK = qw(
+		get_name
+		set_name
+		get_pdeathsig
+		set_pdeathsig
+	);
 %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 1;
@@ -31,19 +36,24 @@ Linux::Prctl::XS - linux prctl interface xs module
 
 =head1 VERSION
 
-0.01
+0.1
 
 =head1 SYNOPSIS
 
   use strict;
   use warnings;
   use Linux::Prctl::XS qw(:all);
+  use POSIX qw(:signal_h);
   
   # get current proc name
-  my $name = pr_get_name();
-  
+  my $name = get_name();
   # change current proc name
-  pr_set_name("newproc") or die "can not change proc name: $!";
+  set_name("newproc") or die "can not change proc name: $!";
+  
+  # get current pdeathsig
+  my $pdeathsig = get_pdeathsig();
+  # set current pdeathsig
+  set_pdeathsig(SIGKILL);
 
 =head1 DESCRIPTION
 
@@ -51,26 +61,48 @@ Linux::Prctl::XS is prctl interface xs module. however, only interface to PR_SET
 
 =head1 METHOD
 
-=head2 pr_get_name
+=head2 get_name
 
 get current proc name
 
 Example:
 
-  use Linux::Prctl::XS qw(pr_get_name);
+  use Linux::Prctl::XS qw(get_name);
   
-  printf "current proc name: %s\n", pr_get_name();
+  printf "current proc name: %s\n", get_name();
 
-=head2 pr_set_name
+=head2 set_name
 
 change current proc name
 
 Example:
 
-  use Linux::Prctl::XS qw(pr_set_name);
+  use Linux::Prctl::XS qw(set_name);
   
   # change current proc name
-  pr_set_name("newproc") or die "can not change proc name: $!";
+  set_name("newproc") or die "can not change proc name: $!";
+
+=head2 get_pdeathsig
+
+get current pdeathsig
+
+Example:
+
+  use Linux::Prctl::XS qw(get_pdeathsig);
+  
+  printf "current pdeathsig: %d\n", get_pdeathsig();
+
+=head2 set_pdeathsig
+
+change current pdeathsig
+
+Example:
+
+  use Linux::Prctl::XS qw(set_pdeathsig);
+  use POSIX qw(:signal_h);
+  
+  # change current pdeathsig 
+  set_pdeathsig(SIGKILL) or die "can not change pdeathsig: $!";
 
 =head1 NOTES
 

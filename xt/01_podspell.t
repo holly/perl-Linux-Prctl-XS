@@ -12,3 +12,4 @@ prctl
 proc
 xs
 CentOS
+pdeathsig

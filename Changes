@@ -1,4 +1,8 @@
 Revision history for Perl extension Linux::Prctl::XS
 
+0.1     Sun Nov  7 13:30:13 2010
+        - method name change: from pr_get_name to get_name, from pr_set_name to set_name
+        - new method: get_pdeathsig and set_pdeathsig
+
 0.01    Fri Oct  1 05:20:40 2010
         - original version
